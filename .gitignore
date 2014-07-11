@@ -1,0 +1,7 @@
+bin/*
+obj/*
+*.suo
+gitignore~
+gitignore.*
+.gitignore~
+..gitignore.un~
