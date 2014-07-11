@@ -5,3 +5,5 @@ gitignore~
 gitignore.*
 .gitignore~
 ..gitignore.un~
+.README.md.un~
+README.md~
