@@ -22,7 +22,7 @@ namespace WpfApplication3
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
-    {
+    {int n = 1;
         public MainWindow()
         {
             InitializeComponent();
@@ -45,6 +45,30 @@ namespace WpfApplication3
                 ApnTextBlock.Text = resultGraphic.Attributes["apn"].ToString();
                 AddressTextBlock.Text = resultGraphic.Attributes["address"].ToString();
             }
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var combo = sender as ComboBox;
+            var sel = combo.SelectedItem as ComboBoxItem;
+            if (sel.Tag == null) { return; }
+
+            // Find and remove the current basemap layer from the map
+            if (MyMap == null) { return; }
+            var oldBasemap = MyMap.Layers["BaseMap"];
+            MyMap.Layers.Remove(oldBasemap);
+
+            // Create a new basemap layer
+            var newBasemap = new Esri.ArcGISRuntime.Layers.ArcGISTiledMapServiceLayer();
+
+            // Set the ServiceUri with the url defined for the ComboBoxItem's Tag
+            newBasemap.ServiceUri = sel.Tag.ToString();
+
+            // Give the layer the same ID so it can still be found with the code above
+            newBasemap.ID = "BaseMap";
+
+            // Insert the new basemap layer as the first (bottom) layer in the map
+            MyMap.Layers.Insert(0, newBasemap);
         }
     }
 }

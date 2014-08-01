@@ -3,20 +3,76 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:esri="http://schemas.esri.com/arcgis/runtime/2013"
         Title="MainWindow" Height="350" Width="525">
-    
-    <Grid>
-        <esri:MapView x:Name="MyMapView">
 
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+
+        <!--Menu Bar Begin-->
+        <DockPanel Name="DockPanel1" Grid.Row="0">
+            <Menu Name="menu1" DockPanel.Dock="Top" RenderTransformOrigin="0.495,0.837">
+                <MenuItem Header="FILE">
+                    <MenuItem Header="Open" Name="Command_Open"/>
+                    <MenuItem Header="Exit" Name="Command_Exit"/>
+                </MenuItem>
+                <MenuItem Header="TEST">
+                    <MenuItem Header="test1" Name="Command_test1"/>
+                    <MenuItem Header="test2" Name="Command_test2"/>
+                    <MenuItem Header="test3" Name="Command_test3"/>
+                </MenuItem>
+                <MenuItem Header="TOOL">
+                    <MenuItem Header="tmp1" Name="tmp1"/>
+                    <MenuItem Header="tmp1" Name="tmp2"/>
+                    <MenuItem Header="tmp1" Name="tmp3"/>
+                </MenuItem>
+            </Menu>
+        </DockPanel>
+        <!--Menu Bar End-->
+
+        <!--ToolBar and Button Begin-->
+        <StackPanel Grid.Row="1" >
+            <ToolBar DockPanel.Dock="Top" Grid.Row="1">
+                <Button>
+                    <Image Source="C:\Users\fujihira\Desktop\EXIFcoordinater\Images\01_directory.jpg"
+                           Width="20" Height="20"/>
+                </Button>
+                <Button>
+                    <Image Source="C:\Users\fujihira\Desktop\EXIFcoordinater\Images\02_camera.jpg"
+                           Width="20" Height="20"/>
+                </Button>
+                <Button>
+                    <Image Source="C:\Users\fujihira\Desktop\EXIFcoordinater\Images\03_move.png"
+                           Width="20" Height="20"/>
+                </Button>
+                <Button>
+                    <Image Source="C:\Users\fujihira\Desktop\EXIFcoordinater\Images\05_attribute.jpg"
+                           Width="20" Height="20"/>
+                </Button>
+                <Button>
+                    <Image Source="C:\Users\fujihira\Desktop\EXIFcoordinater\Images\04_clear.jpg"
+                           Width="20" Height="20"/>
+                </Button>
+            </ToolBar>
+        </StackPanel>
+        <!--ToolBar and Button End-->
+
+
+
+        <!--地図表示-->
+        <esri:MapView x:Name="MyMapView" Grid.Row="2">
             <esri:Map x:Name="MyMap">
-                <esri:ArcGISTiledMapServiceLayer ID="BaseMap" 
+                <esri:ArcGISTiledMapServiceLayer ID="BaseMap"  
                     ServiceUri="http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"/>
-                <esri:FeatureLayer ID="PoolPermits">
+                <!--vector display 機能 Begin-->
+                <!--<esri:FeatureLayer ID="PoolPermits">
                     <esri:FeatureLayer.FeatureTable>
                         <esri:GeodatabaseFeatureServiceTable Where="has_pool = 1 AND pool_permit = 0"
-                            ServiceUri="http://sampleserver6.arcgisonline.com/arcgis/rest/services/PoolPermits/FeatureServer/0" />   
-                            
+                            ServiceUri="http://sampleserver6.arcgisonline.com/arcgis/rest/services/PoolPermits/FeatureServer/0" />
                     </esri:FeatureLayer.FeatureTable>
-                    
                     <esri:FeatureLayer.Renderer>
                         <esri:SimpleRenderer>
                             <esri:SimpleFillSymbol Color="Aqua" Style="DiagonalCross">
@@ -26,7 +82,10 @@
                             </esri:SimpleFillSymbol>
                         </esri:SimpleRenderer>
                     </esri:FeatureLayer.Renderer>
-                </esri:FeatureLayer>
+                </esri:FeatureLayer>-->
+                <!--vector display 機能 END-->
+
+                <!--Add an Envelope element to the map's XAML to define the extent at which the map should initially be displayed.-->
                 <esri:Map.InitialExtent>
                     <esri:Envelope XMin="-13075816.40"
                                    YMin="4014771.46"
@@ -35,9 +94,10 @@
                 </esri:Map.InitialExtent>
             </esri:Map>
         </esri:MapView>
+        <!--地図表示 END-->
 
-        <StackPanel Orientation="Vertical" Background="Yellow" Opacity=".8"
-       HorizontalAlignment="Left" VerticalAlignment="Top">
+        <!--Get Parcel Info-->
+        <StackPanel Orientation="Vertical" Background="Yellow" Opacity=".6" HorizontalAlignment="Right" Height="80" VerticalAlignment="Bottom" Grid.Row="2" Width="93" Margin="0,0,10,10">
             <StackPanel Orientation="Horizontal" Margin="5">
                 <TextBlock Text="Address:" FontWeight="Bold"/>
                 <TextBlock x:Name="AddressTextBlock" Text="--" Margin="5,0"/>
@@ -48,7 +108,20 @@
             </StackPanel>
             <Button x:Name="GetParcelAddressButton" Content="Get Parcel Info" Click="GetParcelAddressButton_Click"/>
         </StackPanel>
-        
-        
+        <!--Get Parcel Info END-->
+
+        <!--Add a basemap selection control.-->
+        <!--<StackPanel HorizontalAlignment="Right" Width="90" Grid.Row="2">-->
+        <ComboBox HorizontalAlignment="Right" VerticalAlignment="Top" Grid.Row="2" Width="80" Height="20" Opacity=".6" SelectionChanged="ComboBox_SelectionChanged" RenderTransformOrigin="0.5,0.5" Margin="0,22,10,99">
+            <ComboBoxItem Content="Streets" IsSelected ="True"
+        			Tag="http://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer"/>
+            <ComboBoxItem Content="Topo"  
+        			Tag="http://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer"/>
+            <ComboBoxItem Content="Imagery" 
+        			Tag="http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"/>
+        </ComboBox>
+        <!--</StackPanel>-->
+        <!--Add a basemap selection control. END-->
+
     </Grid>
 </Window>
