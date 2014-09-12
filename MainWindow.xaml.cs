@@ -14,15 +14,21 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Esri.ArcGISRuntime.Layers;
 using Esri.ArcGISRuntime.Tasks.Query;
+using Esri.ArcGISRuntime.Geometry;
+using System.Globalization;
+using Esri.ArcGISRuntime.Tasks.Geocoding;
+using ShapefileHandler;
+using Microsoft.Win32;
+using Esri.ArcGISRuntime.LocalServices;
 
 
-namespace WpfApplication3
+namespace EXIFcoordinator
 {    
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
-    {int n = 1;
+    {
         public MainWindow()
         {
             InitializeComponent();
@@ -70,5 +76,87 @@ namespace WpfApplication3
             // Insert the new basemap layer as the first (bottom) layer in the map
             MyMap.Layers.Insert(0, newBasemap);
         }
+
+        #region Event Handler for Buttons
+
+        // Export
+        private void ButtonClicked_1(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Export File");
+        }
+
+        // Import
+        private void ButtonClicked_2(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Import EXIF");
+        }
+
+        // Move points
+        private void ButtonClicked_3(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Move points");
+        }
+
+        // Add atributes
+        private void ButtonClicked_4(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Add atributes");
+        }
+
+        // Clear
+        private void ButtonClicked_5(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Clear");
+        }
+
+        // Zoom Buton 
+        private async void ZoomToEnvelopeButton_Click(object sender, RoutedEventArgs e)
+        {
+            // use the MapView's Editor to request geometry (Envelope) from the user and await the result
+            var newExtent = await MyMapView.Editor.RequestShapeAsync(Esri.ArcGISRuntime.Controls.DrawShape.Rectangle);
+            // set the map view extent with the Envelope
+            await MyMapView.SetViewAsync(newExtent);
+        }
+
+        public async void AddShapefileButton_Click(object sender, RoutedEventArgs e)
+        {
+            var myShapefileHandler = new ShapefileHandler();
+            var openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Shapefiles (*.shp)|*.shp";
+            openFileDialog.RestoreDirectory = true;
+            openFileDialog.Multiselect = true;
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    var fileNames = new List<string>();
+                    foreach (var item in openFileDialog.SafeFileNames)
+                    {
+                        fileNames.Add(System.IO.Path.GetFileNameWithoutExtension(item));
+                    }
+
+                    // Call the add dataset method with workspace type, parent directory path and file names (without extensions)
+
+                    var myAddFileDatasetToDynamicMapServiceLayer = new ShapefileHandler();
+
+                    var dynLayer = await myAddFileDatasetToDynamicMapServiceLayer.AddFileDatasetToDynamicMapServiceLayer(WorkspaceFactoryType.Shapefile,
+                        System.IO.Path.GetDirectoryName(openFileDialog.FileName), fileNames);
+
+                    // Add the dynamic map service layer to the map
+                    if (dynLayer != null)
+                    {
+                        MyMapView.Map.Layers.Add(dynLayer);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
+                }
+            }
+        }
+
+        #endregion
+
     }
 }

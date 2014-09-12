@@ -7,7 +7,7 @@
     <ProjectGuid>{BD85CBA9-ADDB-489D-8C40-03EFEA8E7CBC}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EXIFcoordinater</RootNamespace>
+    <RootNamespace>ShapefileHandler</RootNamespace>
     <AssemblyName>EXIFcoordinater</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -34,6 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ESRI.ArcGIS.Client, Version=2.4.0.851, Culture=neutral, PublicKeyToken=29c6dd6e8553d944, processorArchitecture=MSIL" />
     <Reference Include="Esri.ArcGISRuntime, Version=10.2.3.0, Culture=neutral, PublicKeyToken=29c6dd6e8553d944, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -54,6 +55,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DynamicLayerAddDataAddShapefileButton_Click.cs" />
+    <Compile Include="ShapefileHandler.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -93,6 +96,19 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\01_directory.jpg" />
+    <Resource Include="Resources\02_camera.jpg" />
+    <Resource Include="Resources\03_move.png" />
+    <Resource Include="Resources\04_clear.jpg" />
+    <Resource Include="Resources\05_attribute.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\06_zoom.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\07_shapefile.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
