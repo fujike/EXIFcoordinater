@@ -88,7 +88,8 @@ namespace EXIFcoordinator
         // Import
         private void ButtonClicked_2(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Import EXIF");
+            var window = new ImportEXIFWindow(MyMapView);
+            var result = window.ShowDialog();
         }
 
         // Move points
@@ -109,6 +110,49 @@ namespace EXIFcoordinator
             MessageBox.Show("Clear");
         }
 
+        // Show Photo
+        private async void ShowPhoto_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Get the FeatureLayer from the Map.
+                Esri.ArcGISRuntime.Controls.Map myMap = MyMapView.Map;
+                Esri.ArcGISRuntime.Layers.LayerCollection myLayerCollection = myMap.Layers;
+                Esri.ArcGISRuntime.Layers.GraphicsLayer myGraphicLayer 
+                    = (Esri.ArcGISRuntime.Layers.GraphicsLayer)myLayerCollection[1];
+
+                // Get the Editor associated with the MapView. The Editor enables drawing and editing graphic objects.
+                Esri.ArcGISRuntime.Controls.Editor myEditor = MyMapView.Editor;
+
+                // Get the MapPoint that the user tapped/clicked on the Map. Execution of the code stops here until the user is done drawing the MapPoint. 
+                Esri.ArcGISRuntime.Geometry.MapPoint myPoint = await myEditor.RequestPointAsync();
+
+                if (myPoint != null)
+                {
+                    // Translate the MapPoint into Microsoft Point object.
+                    System.Windows.Point myWindowsPoint = MyMapView.LocationToScreen(myPoint);
+                    //Esri.ArcGISRuntime.Data.FeatureTable myFeatureTable = myGraphicLayer.FeatureTable;
+                    Graphic exifPoints = 
+                        await myGraphicLayer.HitTestAsync(MyMapView, myWindowsPoint);
+                    if (exifPoints != null)
+                    {
+                        MessageBox.Show(exifPoints.Attributes["Path"].ToString());
+                    }
+                }
+            }
+            catch (System.Threading.Tasks.TaskCanceledException)
+            {
+                // This exception occurred because the user has already clicked the button but has not clicked/tapped a MapPoint on the Map yet.
+                System.Windows.MessageBox.Show("Click or tap on over a feature in the map to select it.");
+            }
+            catch (System.Exception ex)
+            {
+                // We had some kind of issue. Display to the user so it can be corrected.
+                System.Windows.MessageBox.Show(ex.Message);
+            }
+        }
+
+
         // Zoom Buton 
         private async void ZoomToEnvelopeButton_Click(object sender, RoutedEventArgs e)
         {
@@ -128,8 +172,8 @@ namespace EXIFcoordinator
 
             if (openFileDialog.ShowDialog() == true)
             {
-                try
-                {
+                //try
+                //{
                     var fileNames = new List<string>();
                     foreach (var item in openFileDialog.SafeFileNames)
                     {
@@ -137,9 +181,7 @@ namespace EXIFcoordinator
                     }
 
                     // Call the add dataset method with workspace type, parent directory path and file names (without extensions)
-
                     var myAddFileDatasetToDynamicMapServiceLayer = new ShapefileHandler();
-
                     var dynLayer = await myAddFileDatasetToDynamicMapServiceLayer.AddFileDatasetToDynamicMapServiceLayer(WorkspaceFactoryType.Shapefile,
                         System.IO.Path.GetDirectoryName(openFileDialog.FileName), fileNames);
 
@@ -148,15 +190,17 @@ namespace EXIFcoordinator
                     {
                         MyMapView.Map.Layers.Add(dynLayer);
                     }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
-                }
+                //}
+                //catch (Exception ex)
+                //{
+                //    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
+                //}
             }
         }
 
         #endregion
+
+
 
     }
 }

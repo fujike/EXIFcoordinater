@@ -38,6 +38,8 @@
     <Reference Include="Esri.ArcGISRuntime, Version=10.2.3.0, Culture=neutral, PublicKeyToken=29c6dd6e8553d944, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -56,7 +58,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DynamicLayerAddDataAddShapefileButton_Click.cs" />
+    <Compile Include="ImportEXIFWindow.xaml.cs">
+      <DependentUpon>ImportEXIFWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ShapefileHandler.cs" />
+    <Page Include="ImportEXIFWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -93,22 +102,35 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <None Include="Resources\water-distribution-network.mpk">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\01_directory.jpg" />
     <Resource Include="Resources\02_camera.jpg" />
     <Resource Include="Resources\03_move.png" />
     <Resource Include="Resources\04_clear.jpg" />
-    <Resource Include="Resources\05_attribute.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\06_zoom.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\07_shapefile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\01_save.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\05_attribute.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\08_landscape.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
