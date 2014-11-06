@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,9 +18,10 @@ using Esri.ArcGISRuntime.Tasks.Query;
 using Esri.ArcGISRuntime.Geometry;
 using System.Globalization;
 using Esri.ArcGISRuntime.Tasks.Geocoding;
-using ShapefileHandler;
+using EXIFcoordinator;
 using Microsoft.Win32;
 using Esri.ArcGISRuntime.LocalServices;
+using EXIFcoordinater;
 
 
 namespace EXIFcoordinator
@@ -79,12 +81,6 @@ namespace EXIFcoordinator
 
         #region Event Handler for Buttons
 
-        // Export
-        private void ButtonClicked_1(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Export File");
-        }
-
         // Import
         private void ButtonClicked_2(object sender, RoutedEventArgs e)
         {
@@ -136,7 +132,8 @@ namespace EXIFcoordinator
                         await myGraphicLayer.HitTestAsync(MyMapView, myWindowsPoint);
                     if (exifPoints != null)
                     {
-                        MessageBox.Show(exifPoints.Attributes["Path"].ToString());
+                        var window = new ShowPhotoWindow(exifPoints);
+                        var result = window.ShowDialog();
                     }
                 }
             }
@@ -197,6 +194,40 @@ namespace EXIFcoordinator
                 //}
             }
         }
+
+
+        // CSV Export
+        private void Click_ExportCSV(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.SaveFileDialog saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            saveFileDialog1.FilterIndex = 2;
+            saveFileDialog1.RestoreDirectory = true;
+            Encoding encode = Encoding.GetEncoding("UTF-8");
+
+            Stream myStream;
+            if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                if ((myStream = saveFileDialog1.OpenFile()) != null)
+                {
+                    // Code to write the stream goes here.
+                    myStream.Close();
+                }
+            }
+
+            var writer = new System.IO.StreamWriter(saveFileDialog1.FileName, true, encode);
+
+            var x = new int[] { 3, 4, 5, 6, 7 };
+            var y = new int[] { 2, 1, 3, 5, 6 };
+            var z = new int[] { 3, 1, 0, -3, 4 };
+
+            for (int i = 0; i < x.Length; ++i)
+            {
+                writer.WriteLine("{0}, {1}, {2}", x[i], y[i], z[i]);
+            }
+            writer.Close();
+        }
+
 
         #endregion
 
