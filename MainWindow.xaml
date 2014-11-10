@@ -4,12 +4,18 @@
         xmlns:esri="http://schemas.esri.com/arcgis/runtime/2013"
         Title="MainWindow" Height="Auto" Width="Auto">
 
-    <Grid>
+    <Grid x:Name="LayoutRoot2">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
+
+        <Grid.Resources>
+            <esri:SimpleMarkerSymbol x:Key="MyPointSymbol" Color="Magenta" Size="12" Style="Circle" />
+        </Grid.Resources>
+
+
         <!--Menu Bar Begin-->
         <DockPanel Name="DockPanel1" Grid.Row="0">
             <!--<Menu Name="menu1" DockPanel.Dock="Top" RenderTransformOrigin="0.495,0.837">
@@ -46,16 +52,16 @@
         <!--ToolBar and Button Begin-->
         <StackPanel Grid.Row="1" >
             <ToolBar DockPanel.Dock="Top" Grid.Row="1">
-                <Button Click="ButtonClicked_2" Margin="3,0">
+                <Button Click="ButtonClicked_2" Margin="3,0"  ToolTip="Import photos with GPS information">
                     <Image Source="Resources/02_camera.jpg"
                            Width="40" Height="40"/>
                 </Button>
-                <Button Click="AddShapefileButton_Click" Margin="3,0">
+                <Button Click="AddShapefileButton_Click" Margin="3,0" ToolTip="Import a Shapefile file">
                     <Image Source="Resources/07_shapefile.png"
                            Width="40" Height="40">
                     </Image>
                 </Button>
-                <Button Click="ShowPhoto_Click" Margin="3,0">
+                <Button Click="ShowPhoto_Click" Margin="3,0" ToolTip="Display a photo with GPS information">
                     <Image Source="Resources/08_landscape.jpg"
                            Width="40" Height="40">
                     </Image>
@@ -70,7 +76,12 @@
                            Width="40" Height="40"/>
                 </Button>
 
-                <Button Click="Click_ExportCSV">
+                <Button Click="Click_ExportCSV" ToolTip="Export a csv/txt file">
+                    <Image Source="Resources/01_save.jpg"
+                           Width="40" Height="40"/>
+                </Button>
+
+                <Button Name="tes" Click="Click_InportCSV" ToolTip="Import a csv file">
                     <Image Source="Resources/01_save.jpg"
                            Width="40" Height="40"/>
                 </Button>
@@ -79,7 +90,7 @@
                     <Image Source="Resources/04_clear.jpg"
                            Width="40" Height="40"/>
                 </Button>
-                <Button Click="ZoomToEnvelopeButton_Click" Margin="3,0">
+                <Button Click="ZoomToEnvelopeButton_Click" Margin="3,0" ToolTip="Zoom in">
                     <Image Source="Resources/06_zoom.png"
                            Width="40" Height="40"/>
                 </Button>

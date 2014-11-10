@@ -21,7 +21,7 @@ using Esri.ArcGISRuntime.Tasks.Geocoding;
 using EXIFcoordinator;
 using Microsoft.Win32;
 using Esri.ArcGISRuntime.LocalServices;
-using EXIFcoordinater;
+
 
 
 namespace EXIFcoordinator
@@ -200,10 +200,10 @@ namespace EXIFcoordinator
         private void Click_ExportCSV(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.SaveFileDialog saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            saveFileDialog1.Filter = "csv files (*.csv)|*.csv|All files (*.*)|*.*";
             saveFileDialog1.FilterIndex = 2;
             saveFileDialog1.RestoreDirectory = true;
-            Encoding encode = Encoding.GetEncoding("UTF-8");
+            Encoding utf8 = Encoding.GetEncoding("UTF-8");
 
             Stream myStream;
             if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -215,23 +215,79 @@ namespace EXIFcoordinator
                 }
             }
 
-            var writer = new System.IO.StreamWriter(saveFileDialog1.FileName, true, encode);
+            var writer = new System.IO.StreamWriter(saveFileDialog1.FileName, true, utf8);
 
-            var x = new int[] { 3, 4, 5, 6, 7 };
-            var y = new int[] { 2, 1, 3, 5, 6 };
-            var z = new int[] { 3, 1, 0, -3, 4 };
+            var myGraphicsLayer = (Esri.ArcGISRuntime.Layers.GraphicsLayer)this.MyMapView.Map.Layers["MyGraphicsLayer"];
 
-            for (int i = 0; i < x.Length; ++i)
+            foreach (var item in myGraphicsLayer.Graphics)
             {
-                writer.WriteLine("{0}, {1}, {2}", x[i], y[i], z[i]);
+                Graphic point = item;
+                string name = System.IO.Path.GetFileName(point.Attributes["Path"].ToString());
+                string direction = point.Attributes["Direction"].ToString();
+                var latlon = point.Geometry as MapPoint;
+                var longitude = latlon.X;
+                var latitude = latlon.Y;
+                writer.WriteLine("{0}, {1}, {2}, {3}", name, latitude, longitude, direction);
             }
             writer.Close();
         }
 
+        private void Click_InportCSV(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.OpenFileDialog openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            openFileDialog1.Filter = "csv files (*.csv)|*.csv";
+            openFileDialog1.RestoreDirectory = true;
+
+            Encoding shiftjis = Encoding.GetEncoding("Shift_JIS");
+            //if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            //{
+            //    string[] lines = System.IO.File.ReadAllLines(openFileDialog1.FileName, shiftjis);
+            //}
+            //else
+            //{
+            //    MessageBox.Show("Error.");
+            //}
+
+            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                string text = System.IO.File.ReadAllText(openFileDialog1.FileName, shiftjis);
+                string[] rows = text.Trim().Replace("\r", "").Split('\n');
+
+                for (int i = 0; i < rows.Length; i++)
+                {
+                    string[] columns = rows[i].Split(',');
+                    string filename = columns[0];
+                    string latitude = columns[1];
+                    string longitude = columns[2];
+                    string direction = columns[3];
+
+                    // EXIFの緯度経度をポイントで表示
+                    double lat = double.Parse(columns[1]);
+                    double lon = double.Parse(columns[2]);
+                    var sref = Esri.ArcGISRuntime.Geometry.SpatialReferences.Wgs84;
+                    var myGraphicsLayer = (Esri.ArcGISRuntime.Layers.GraphicsLayer)this.MyMapView.Map.Layers["MyGraphicsLayer"];
+                    var myGeometry = new Esri.ArcGISRuntime.Geometry.MapPoint(lon, lat, sref);
+                    var myPointSymbol = (Esri.ArcGISRuntime.Symbology.SimpleMarkerSymbol)LayoutRoot2.Resources["MyPointSymbol"];
+                    var myGraphic = new Esri.ArcGISRuntime.Layers.Graphic(myGeometry, myPointSymbol);
+                    myGraphic.Attributes["Path"] = filename;
+                    myGraphic.Attributes["Direction"] = direction;
+                    myGraphicsLayer.Graphics.Add(myGraphic);
+
+                }
+            }
+            else
+            {
+                MessageBox.Show("Error.");
+            }
+
+
+        }
 
         #endregion
 
 
 
     }
+
+        
 }
