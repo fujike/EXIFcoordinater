@@ -12,7 +12,7 @@
         </Grid.RowDefinitions>
 
         <Grid.Resources>
-            <esri:SimpleMarkerSymbol x:Key="MyPointSymbol" Color="Magenta" Size="12" Style="Circle" />
+            <esri:SimpleMarkerSymbol x:Key="MyPointSymbol" Color="Magenta" Size="12" Style="X" />
         </Grid.Resources>
 
 
@@ -67,7 +67,7 @@
                     </Image>
                 </Button>
 
-                <Button Click="ButtonClicked_3" Margin="3,0">
+                <Button Click="MovePoint_Click" Margin="3,0">
                     <Image Source="Resources/03_move.png"
                            Width="40" Height="40"/>
                 </Button>
