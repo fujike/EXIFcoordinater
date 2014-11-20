@@ -89,12 +89,43 @@ namespace EXIFcoordinator
             var result = window.ShowDialog();
         }
 
+
+
+
+
+
+
+
         // Move points
         private async void MovePoint_Click(object sender, RoutedEventArgs e)
         {
+
+            // 現在、任意の地点にポイントを追加することができる。
+
+            var myGraphicsLayer = (Esri.ArcGISRuntime.Layers.GraphicsLayer)this.MyMapView.Map.Layers["MyGraphicsLayer"];
             // Get the Editor associated with the MapView. The Editor enables drawing and editing graphic objects.
             Esri.ArcGISRuntime.Controls.Editor myEditor = MyMapView.Editor;
             Esri.ArcGISRuntime.Geometry.MapPoint myPoint = await myEditor.RequestPointAsync();
+            if (myPoint != null)
+            {
+                // Translate the MapPoint into Microsoft Point object.
+                System.Windows.Point myWindowsPoint = MyMapView.LocationToScreen(myPoint);
+                //Esri.ArcGISRuntime.Data.FeatureTable myFeatureTable = myGraphicLayer.FeatureTable;
+                Graphic exifPoints =  await myGraphicsLayer.HitTestAsync(MyMapView, myWindowsPoint);
+
+                var myPointSymbol = (Esri.ArcGISRuntime.Symbology.SimpleMarkerSymbol)this.LayoutRoot2.Resources["MyPointSymbol_selected"];
+                var myGraphic = new Esri.ArcGISRuntime.Layers.Graphic(myPoint, myPointSymbol);
+                myGraphicsLayer.Graphics.Add(myGraphic);
+
+            }
+
+
+
+
+
+
+
+
 
 
 
@@ -114,7 +145,8 @@ namespace EXIFcoordinator
         // Clear
         private void ButtonClicked_5(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Clear");
+            var myGraphicsLayer = (Esri.ArcGISRuntime.Layers.GraphicsLayer)this.MyMapView.Map.Layers["MyGraphicsLayer"];
+            myGraphicsLayer.Graphics.Clear();
         }
 
         // Show Photo
@@ -180,29 +212,23 @@ namespace EXIFcoordinator
 
             if (openFileDialog.ShowDialog() == true)
             {
-                //try
-                //{
-                    var fileNames = new List<string>();
-                    foreach (var item in openFileDialog.SafeFileNames)
-                    {
-                        fileNames.Add(System.IO.Path.GetFileNameWithoutExtension(item));
-                    }
+                var fileNames = new List<string>();
+                foreach (var item in openFileDialog.SafeFileNames)
+                {
+                    fileNames.Add(System.IO.Path.GetFileNameWithoutExtension(item));
+                }
 
-                    // Call the add dataset method with workspace type, parent directory path and file names (without extensions)
-                    var myAddFileDatasetToDynamicMapServiceLayer = new ShapefileHandler();
-                    var dynLayer = await myAddFileDatasetToDynamicMapServiceLayer.AddFileDatasetToDynamicMapServiceLayer(WorkspaceFactoryType.Shapefile,
-                        System.IO.Path.GetDirectoryName(openFileDialog.FileName), fileNames);
+                // Call the add dataset method with workspace type, parent directory path and file names (without extensions)
+                var myAddFileDatasetToDynamicMapServiceLayer = new ShapefileHandler();
+                var dynLayer = await myAddFileDatasetToDynamicMapServiceLayer.AddFileDatasetToDynamicMapServiceLayer(WorkspaceFactoryType.Shapefile,
+                    System.IO.Path.GetDirectoryName(openFileDialog.FileName), fileNames);
 
-                    // Add the dynamic map service layer to the map
-                    if (dynLayer != null)
-                    {
-                        MyMapView.Map.Layers.Add(dynLayer);
-                    }
-                //}
-                //catch (Exception ex)
-                //{
-                //    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
-                //}
+                // Add the dynamic map service layer to the map
+                if (dynLayer != null)
+                {
+                    MyMapView.Map.Layers.Add(dynLayer);
+                }
+                    
             }
         }
 
@@ -272,10 +298,22 @@ namespace EXIFcoordinator
                         double lon = double.Parse(columns[2]);
                         int dir = int.Parse(columns[3]);
                         var myGraphicsLayer = (Esri.ArcGISRuntime.Layers.GraphicsLayer)this.MyMapView.Map.Layers["MyGraphicsLayer"];
-                        var myPointSymbol = (Esri.ArcGISRuntime.Symbology.SimpleMarkerSymbol)this.LayoutRoot2.Resources["MyPointSymbol"];
+                        //var myPointSymbol = (Esri.ArcGISRuntime.Symbology.SimpleMarkerSymbol)this.LayoutRoot2.Resources["MyPointSymbol"];
+                        
+                        //var myGraphic = MainWindow.MappingPoints(lat, lon, dir, filename, myPointSymbol);
 
-                        var myGraphic = MainWindow.MappingPoints(lat, lon, dir, filename, myPointSymbol);
-
+                        //System.Uri myPictureUri = new System.Uri("Resources/10_arrow.png", UriKind.Relative);
+                        ////var myPictureMarkerSymbol = (Esri.ArcGISRuntime.Symbology.PictureMarkerSymbol)this.LayoutRoot2.Resources["MyPointSymbol_arrow"];
+                        //var myPictureMarkerSymbol = new Esri.ArcGISRuntime.Symbology.PictureMarkerSymbol();
+                        //myPictureMarkerSymbol.SetSourceAsync(myPictureUri);
+                        //myPictureMarkerSymbol.Height = 20;
+                        //myPictureMarkerSymbol.Width = 10;
+                        //myPictureMarkerSymbol.Angle = dir;
+                        var myPictureMarkerSymbol = ArrowSymbol(dir);
+                        //var mySimpleRenderer = new Esri.ArcGISRuntime.Symbology.SimpleRenderer();
+                        //mySimpleRenderer.Symbol = myPictureMarkerSymbol;
+                        var myGraphic = MainWindow.MappingPoints(lat, lon, dir, filename, myPictureMarkerSymbol);
+                        
                         myGraphicsLayer.Graphics.Add(myGraphic);
                     }
                 }
@@ -287,8 +325,20 @@ namespace EXIFcoordinator
         }
 
         #endregion
+        public static PictureMarkerSymbol ArrowSymbol(int dir)
+        {
+            System.Uri myPictureUri = new System.Uri("Resources/10_arrow.png", UriKind.Relative);
+            var myPictureMarkerSymbol = new Esri.ArcGISRuntime.Symbology.PictureMarkerSymbol();
+            myPictureMarkerSymbol.SetSourceAsync(myPictureUri);
+            myPictureMarkerSymbol.Height = 40;
+            myPictureMarkerSymbol.Width = 20;
+            myPictureMarkerSymbol.Angle = dir;
+            return myPictureMarkerSymbol;
+        }
 
-        public static Graphic MappingPoints(double lat, double lon, int direction, string filename, SimpleMarkerSymbol marker)
+
+        //public static Graphic MappingPoints(double lat, double lon, int direction, string filename, SimpleMarkerSymbol marker)
+        public static Graphic MappingPoints(double lat, double lon, int direction, string filename, PictureMarkerSymbol marker)
         {
 
             var sref = Esri.ArcGISRuntime.Geometry.SpatialReferences.Wgs84;

@@ -12,13 +12,14 @@
         </Grid.RowDefinitions>
 
         <Grid.Resources>
-            <esri:SimpleMarkerSymbol x:Key="MyPointSymbol" Color="Magenta" Size="12" Style="X" />
+            <esri:SimpleMarkerSymbol x:Key="MyPointSymbol" Color="Magenta" Size="12" Style="Cross" Angle="0" />
+            <esri:SimpleMarkerSymbol x:Key="MyPointSymbol_selected" Color="Red" Size="12" Style="X"/>
         </Grid.Resources>
 
 
         <!--Menu Bar Begin-->
-        <DockPanel Name="DockPanel1" Grid.Row="0">
-            <!--<Menu Name="menu1" DockPanel.Dock="Top" RenderTransformOrigin="0.495,0.837">
+        <!--<DockPanel Name="DockPanel1" Grid.Row="0">
+            <Menu Name="menu1" DockPanel.Dock="Top" RenderTransformOrigin="0.495,0.837">
                 <MenuItem Header="File">
                     <MenuItem Header="New project" Name="Command_New"/>
                     <MenuItem Header="Import EXIF" Name="Command_Open"/>
@@ -45,8 +46,8 @@
                     <MenuItem Header="Jpeg" Name="tmp7"/>
                     <MenuItem Header="Vector" Name="tmp8"/>
                 </MenuItem>
-            </Menu>-->
-        </DockPanel>
+            </Menu>
+        </DockPanel>-->
         <!--Menu Bar End-->
 
         <!--ToolBar and Button Begin-->
