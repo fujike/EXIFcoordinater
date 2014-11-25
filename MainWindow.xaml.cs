@@ -99,42 +99,53 @@ namespace EXIFcoordinator
         // Move points
         private async void MovePoint_Click(object sender, RoutedEventArgs e)
         {
-
-            // 現在、任意の地点にポイントを追加することができる。
-
             var myGraphicsLayer = (Esri.ArcGISRuntime.Layers.GraphicsLayer)this.MyMapView.Map.Layers["MyGraphicsLayer"];
             // Get the Editor associated with the MapView. The Editor enables drawing and editing graphic objects.
             Esri.ArcGISRuntime.Controls.Editor myEditor = MyMapView.Editor;
             Esri.ArcGISRuntime.Geometry.MapPoint myPoint = await myEditor.RequestPointAsync();
-            if (myPoint != null)
+            // Translate the MapPoint into Microsoft Point object.
+            System.Windows.Point myWindowsPoint = MyMapView.LocationToScreen(myPoint);
+            //Esri.ArcGISRuntime.Data.FeatureTable myFeatureTable = myGraphicLayer.FeatureTable;
+            Graphic exifPoints =  await myGraphicsLayer.HitTestAsync(MyMapView, myWindowsPoint);
+
+            if (myPoint != null && exifPoints != null)
             {
-                // Translate the MapPoint into Microsoft Point object.
-                System.Windows.Point myWindowsPoint = MyMapView.LocationToScreen(myPoint);
-                //Esri.ArcGISRuntime.Data.FeatureTable myFeatureTable = myGraphicLayer.FeatureTable;
-                Graphic exifPoints =  await myGraphicsLayer.HitTestAsync(MyMapView, myWindowsPoint);
-
-                var myPointSymbol = (Esri.ArcGISRuntime.Symbology.SimpleMarkerSymbol)this.LayoutRoot2.Resources["MyPointSymbol_selected"];
-                var myGraphic = new Esri.ArcGISRuntime.Layers.Graphic(myPoint, myPointSymbol);
-                myGraphicsLayer.Graphics.Add(myGraphic);
-
+                NewPoint(exifPoints);
             }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         }
+
+
+        public async void NewPoint(Graphic exifPoints)
+        {
+            var myGraphicsLayer = (Esri.ArcGISRuntime.Layers.GraphicsLayer)this.MyMapView.Map.Layers["MyGraphicsLayer"];
+            Esri.ArcGISRuntime.Controls.Editor myEditor = MyMapView.Editor;
+            Esri.ArcGISRuntime.Geometry.MapPoint myPoint = await myEditor.RequestPointAsync();
+            System.Windows.Point myWindowsPoint = MyMapView.LocationToScreen(myPoint);
+
+
+            Graphic newPoint = await myGraphicsLayer.HitTestAsync(MyMapView, myWindowsPoint);
+
+            var latlon = newPoint.Geometry as MapPoint;
+            var lat = latlon.X;
+            var lon = latlon.Y;
+            var filename = exifPoints.Attributes["Path"].ToString();
+            int dir = int.Parse(exifPoints.Attributes["Direction"].ToString());
+            var myPictureMarkerSymbol = ArrowSymbol(dir);
+            var myGraphic = MainWindow.MappingPoints(lat, lon, dir, filename, myPictureMarkerSymbol);
+            myGraphicsLayer.Graphics.Add(myGraphic);
+        }
+
+
+
+
+
+
+
+
+
+
+
 
         // Add atributes
         private void ButtonClicked_4(object sender, RoutedEventArgs e)
