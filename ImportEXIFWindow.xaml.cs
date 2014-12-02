@@ -133,17 +133,13 @@ namespace EXIFcoordinator
                 // EXIFの緯度経度をポイントで表示
                 double lat = double.Parse(GPSInfo_lat.Text);
                 double lon = double.Parse(GPSInfo_lon.Text);
-                //var myGraphicsLayer = (Esri.ArcGISRuntime.Layers.GraphicsLayer)myMapView.Map.Layers["MyGraphicsLayer"];
-                //var myPointSymbol = (Esri.ArcGISRuntime.Symbology.SimpleMarkerSymbol)LayoutRoot.Resources["MyPointSymbol"];
-                //var myGraphic = MainWindow.MappingPoints(lat, lon, direction, filename, myPointSymbol);
-
                 var myGraphicsLayer = (Esri.ArcGISRuntime.Layers.GraphicsLayer)myMapView.Map.Layers["MyGraphicsLayer"];
                 var myPictureMarkerSymbol = MainWindow.ArrowSymbol(direction);
                 var myGraphic = MainWindow.MappingPoints(lat, lon, direction, filename, myPictureMarkerSymbol);
                 myGraphicsLayer.Graphics.Add(myGraphic);
 
             }
-            catch (System.Exception)
+            catch (Exception)
             {
                 System.Windows.MessageBox.Show(
                     System.IO.Path.GetFileName(filename) + "\n does not have GPS information.");

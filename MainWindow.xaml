@@ -5,104 +5,18 @@
         Title="MainWindow" Height="Auto" Width="Auto">
 
     <Grid x:Name="LayoutRoot2">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        
         <Grid.Resources>
             <esri:SimpleMarkerSymbol x:Key="MyPointSymbol" Color="Magenta" Size="12" Style="Cross" Angle="0" />
             <esri:SimpleMarkerSymbol x:Key="MyPointSymbol_selected" Color="Red" Size="12" Style="X"/>
         </Grid.Resources>
 
-
-        <!--Menu Bar Begin-->
-        <!--<DockPanel Name="DockPanel1" Grid.Row="0">
-            <Menu Name="menu1" DockPanel.Dock="Top" RenderTransformOrigin="0.495,0.837">
-                <MenuItem Header="File">
-                    <MenuItem Header="New project" Name="Command_New"/>
-                    <MenuItem Header="Import EXIF" Name="Command_Open"/>
-                    <MenuItem Header="Save" Name="Command_Save"/>
-                    <MenuItem Header="Overwrite" Name="Command_Overwrite"/>
-                    <MenuItem Header="Print" Name="Command_Print"/>
-                    <MenuItem Header="Exit" Name="Command_Exit"/>
-                </MenuItem>
-                <MenuItem Header="Edit">
-                    <MenuItem Header="Cancel" Name="Command_Cancel"/>
-                    <MenuItem Header="Revert" Name="Command_Revert"/>
-                </MenuItem>
-                <MenuItem Header="View">
-                    <MenuItem Header="tmp1" Name="tmp1"/>
-                    <MenuItem Header="tmp1" Name="tmp2"/>
-                    <MenuItem Header="tmp1" Name="tmp3"/>
-                </MenuItem>
-                <MenuItem Header="Tools">
-                    <MenuItem Header="Ruler" Name="Command_Ruler"/>
-                    <MenuItem Header="tmp1" Name="tmp5"/>
-                    <MenuItem Header="tmp1" Name="tmp6"/>
-                </MenuItem>
-                <MenuItem Header="Add">
-                    <MenuItem Header="Jpeg" Name="tmp7"/>
-                    <MenuItem Header="Vector" Name="tmp8"/>
-                </MenuItem>
-            </Menu>
-        </DockPanel>-->
-        <!--Menu Bar End-->
-
-        <!--ToolBar and Button Begin-->
-        <StackPanel Grid.Row="1" >
-            <ToolBar DockPanel.Dock="Top" Grid.Row="1">
-                <Button Click="ButtonClicked_2" Margin="3,0"  ToolTip="Import photos with GPS information">
-                    <Image Source="Resources/02_camera.jpg"
-                           Width="40" Height="40"/>
-                </Button>
-                <Button Click="AddShapefileButton_Click" Margin="3,0" ToolTip="Import a Shapefile file">
-                    <Image Source="Resources/07_shapefile.png"
-                           Width="40" Height="40">
-                    </Image>
-                </Button>
-                <Button Click="ShowPhoto_Click" Margin="3,0" ToolTip="Display a photo with GPS information">
-                    <Image Source="Resources/08_landscape.jpg"
-                           Width="40" Height="40">
-                    </Image>
-                </Button>
-
-                <Button Click="MovePoint_Click" Margin="3,0">
-                    <Image Source="Resources/03_move.png"
-                           Width="40" Height="40"/>
-                </Button>
-                <Button Click="ButtonClicked_4" Margin="3,0">
-                    <Image Source="Resources/05_attribute.jpg"
-                           Width="40" Height="40"/>
-                </Button>
-
-                <Button Click="Click_ExportCSV" ToolTip="Export a csv/txt file">
-                    <Image Source="Resources/01_save.jpg"
-                           Width="40" Height="40"/>
-                </Button>
-
-                <Button Name="tes" Click="Click_InportCSV" ToolTip="Import a csv file">
-                    <Image Source="Resources/01_save.jpg"
-                           Width="40" Height="40"/>
-                </Button>
-
-                <Button Click="ButtonClicked_5" Margin="3,0">
-                    <Image Source="Resources/04_clear.jpg"
-                           Width="40" Height="40"/>
-                </Button>
-                <Button Click="ZoomToEnvelopeButton_Click" Margin="3,0" ToolTip="Zoom in">
-                    <Image Source="Resources/06_zoom.png"
-                           Width="40" Height="40"/>
-                </Button>
-
-            </ToolBar>
-        </StackPanel>
-        <!--ToolBar and Button End-->
-
-
         <!--地図表示-->
-        <esri:MapView x:Name="MyMapView" Grid.Row="2" Margin="10,0,-10,0">
+        <esri:MapView x:Name="MyMapView" Grid.Column="1">
             <esri:Map x:Name="MyMap">
                 <!--Add an Envelope element to the map's XAML to define the extent at which the map should initially be displayed.-->
                 <esri:Map.InitialExtent>
@@ -113,54 +27,63 @@
                 <esri:ArcGISTiledMapServiceLayer ID="BaseMap"  
                     ServiceUri="http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"/>
                 <esri:GraphicsLayer ID="MyGraphicsLayer"/>
-                <!--vector display 機能 Begin-->
-                <!--<esri:FeatureLayer ID="PoolPermits">
-                    <esri:FeatureLayer.FeatureTable>
-                        <esri:GeodatabaseFeatureServiceTable Where="has_pool = 1 AND pool_permit = 0"
-                            ServiceUri="http://sampleserver6.arcgisonline.com/arcgis/rest/services/PoolPermits/FeatureServer/0" />
-                    </esri:FeatureLayer.FeatureTable>
-                    <esri:FeatureLayer.Renderer>
-                        <esri:SimpleRenderer>
-                            <esri:SimpleFillSymbol Color="Aqua" Style="DiagonalCross">
-                                <esri:SimpleFillSymbol.Outline>
-                                    <esri:SimpleLineSymbol Color="Firebrick" Width="1" Style="Dot" />
-                                </esri:SimpleFillSymbol.Outline>
-                            </esri:SimpleFillSymbol>
-                        </esri:SimpleRenderer>
-                    </esri:FeatureLayer.Renderer>
-                </esri:FeatureLayer>-->
-                <!--vector display 機能 END-->
             </esri:Map>
         </esri:MapView>
         <!--地図表示 END-->
 
-        <!--Get Parcel Info-->
-        <TextBox Name="dummy"/>
-        <StackPanel Orientation="Vertical" Background="Yellow" Opacity=".6" HorizontalAlignment="Right" Height="80" VerticalAlignment="Bottom" Grid.Row="2" Width="93" Margin="0,0,10,10">
-            <StackPanel Orientation="Horizontal" Margin="5">
-                <TextBlock Text="Address:" FontWeight="Bold"/>
-                <TextBlock x:Name="AddressTextBlock" Text="--" Margin="5,0"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="5">
-                <TextBlock Text="APN:" FontWeight="Bold"/>
-                <TextBlock x:Name="ApnTextBlock" Text="--" Margin="5,0"/>
-            </StackPanel>
-            <Button x:Name="GetParcelAddressButton" Content="Get Parcel Info" Click="GetParcelAddressButton_Click"/>
-        </StackPanel>
-        <!--Get Parcel Info END-->
-
         <!--Add a basemap selection control.-->
-        <!--<StackPanel HorizontalAlignment="Right" Width="90" Grid.Row="2">-->
-        <ComboBox HorizontalAlignment="Right" VerticalAlignment="Top" Grid.Row="2" Width="80" Height="20" Opacity=".6" SelectionChanged="ComboBox_SelectionChanged" RenderTransformOrigin="0.5,0.5" Margin="0,22,10,99">
-            <ComboBoxItem Content="Streets" IsSelected ="True"
-        			Tag="http://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer"/>
-            <ComboBoxItem Content="Topo"  
-        			Tag="http://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer"/>
-            <ComboBoxItem Content="Imagery" 
+        <ComboBox Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Width="Auto" Height="Auto" 
+                  SelectionChanged="ComboBox_SelectionChanged" RenderTransformOrigin="0.5,0.5" 
+                  Margin="20,20" FontSize="18" FontWeight="Bold">
+            <ComboBoxItem FontSize="18" Content="Imagery" IsSelected ="True"
         			Tag="http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"/>
+            <ComboBoxItem FontSize="18"  Content="Streets"
+        			Tag="http://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer"/>
+            <ComboBoxItem FontSize="18" Content="Topo"
+        			Tag="http://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer"/>
         </ComboBox>
-        <!--</StackPanel>-->
         <!--Add a basemap selection control. END-->
+
+
+
+        <!--ToolBar and Button Begin-->
+        <ToolBarTray DockPanel.Dock="Left" Orientation="Vertical" Grid.Column="0" Width="Auto">
+            <ToolBar DockPanel.Dock="Top" Width="Auto">
+                <Button Click="Import_Photos" ToolTip="Import photos with GPS information">
+                    <Image Source="Resources/02_camera.jpg" Width="60" Height="60"/>
+                </Button>
+                <Button Click="ShowPhoto_Click" ToolTip="Display a photo with GPS information">
+                    <Image Source="Resources/08_landscape.jpg" Width="60" Height="60">
+                    </Image>
+                </Button>
+                <Button Click="MovePoint_Click" ToolTip="Replace a graphic">
+                    <Image Source="Resources/03_move.png" Width="60" Height="60"/>
+                </Button>
+                <Button Click="AddProperty_Click" ToolTip="Add a property of the graphic">
+                    <Image Source="Resources/05_attribute.jpg" Width="60" Height="60"/>
+                </Button>
+                <Button Click="Click_ExportCSV" ToolTip="Export a csv/txt file">
+                    <Image Source="Resources/12_CSV_Export.jpg" Width="60" Height="60"/>
+                </Button>
+
+                <Button Click="Click_InportCSV" ToolTip="Import a csv file">
+                    <Image Source="Resources/11_CSV_Import.png" Width="60" Height="60"/>
+                </Button>
+                <Button Click="AddShapefileButton_Click" ToolTip="Import a Shapefile file">
+                    <Image Source="Resources/07_shapefile.png" Width="60" Height="60"/>
+                </Button>
+
+                <Button Click="Clear_Click" ToolTip="Erace graphics">
+                    <Image Source="Resources/04_clear.jpg" Width="60" Height="60"/>
+                </Button>
+                <Button Click="ZoomToEnvelopeButton_Click" ToolTip="Zoom in">
+                    <Image Source="Resources/06_zoom.png" Width="60" Height="60"/>
+                </Button>
+            </ToolBar>
+        </ToolBarTray>
+        <!--ToolBar and Button End-->
+
+
 
 
     </Grid>

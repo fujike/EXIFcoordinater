@@ -37,24 +37,6 @@ namespace EXIFcoordinator
             InitializeComponent();
         }
 
-        private async void GetParcelAddressButton_Click(object sender, RoutedEventArgs e)
-        {
-            var mapPoint = await MyMapView.Editor.RequestPointAsync();
-
-            var poolPermitUrl = "http://sampleserver6.arcgisonline.com/arcgis/rest/services/PoolPermits/FeatureServer/0";
-            var queryTask = new QueryTask(new System.Uri(poolPermitUrl));
-            var queryFilter = new Query(mapPoint);
-            queryFilter.OutFields.Add("apn");
-            queryFilter.OutFields.Add("address");
-
-            var queryResult = await queryTask.ExecuteAsync(queryFilter);
-            if (queryResult.FeatureSet.Features.Count > 0)
-            {
-                var resultGraphic = queryResult.FeatureSet.Features[0] as Graphic;
-                ApnTextBlock.Text = resultGraphic.Attributes["apn"].ToString();
-                AddressTextBlock.Text = resultGraphic.Attributes["address"].ToString();
-            }
-        }
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -83,7 +65,7 @@ namespace EXIFcoordinator
         #region Event Handler for Buttons
 
         // Import
-        private void ButtonClicked_2(object sender, RoutedEventArgs e)
+        private void Import_Photos(object sender, RoutedEventArgs e)
         {
             var window = new ImportEXIFWindow(MyMapView);
             var result = window.ShowDialog();
@@ -99,20 +81,26 @@ namespace EXIFcoordinator
         // Move points
         private async void MovePoint_Click(object sender, RoutedEventArgs e)
         {
-            var myGraphicsLayer = (Esri.ArcGISRuntime.Layers.GraphicsLayer)this.MyMapView.Map.Layers["MyGraphicsLayer"];
-            // Get the Editor associated with the MapView. The Editor enables drawing and editing graphic objects.
-            Esri.ArcGISRuntime.Controls.Editor myEditor = MyMapView.Editor;
-            Esri.ArcGISRuntime.Geometry.MapPoint myPoint = await myEditor.RequestPointAsync();
-            // Translate the MapPoint into Microsoft Point object.
-            System.Windows.Point myWindowsPoint = MyMapView.LocationToScreen(myPoint);
-            //Esri.ArcGISRuntime.Data.FeatureTable myFeatureTable = myGraphicLayer.FeatureTable;
-            Graphic exifPoints =  await myGraphicsLayer.HitTestAsync(MyMapView, myWindowsPoint);
-
-            if (myPoint != null && exifPoints != null)
+            try
             {
-                NewPoint(exifPoints);
-            }
+                var myGraphicsLayer = (Esri.ArcGISRuntime.Layers.GraphicsLayer)this.MyMapView.Map.Layers["MyGraphicsLayer"];
+                // Get the Editor associated with the MapView. The Editor enables drawing and editing graphic objects.
+                Esri.ArcGISRuntime.Controls.Editor myEditor = MyMapView.Editor;
+                Esri.ArcGISRuntime.Geometry.MapPoint myPoint = await myEditor.RequestPointAsync();
+                // Translate the MapPoint into Microsoft Point object.
+                System.Windows.Point myWindowsPoint = MyMapView.LocationToScreen(myPoint);
+                //Esri.ArcGISRuntime.Data.FeatureTable myFeatureTable = myGraphicLayer.FeatureTable;
+                Graphic exifPoints = await myGraphicsLayer.HitTestAsync(MyMapView, myWindowsPoint);
 
+                if (myPoint != null && exifPoints != null)
+                {
+                    NewPoint(exifPoints);
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Try again!");
+            }
         }
 
 
@@ -120,41 +108,76 @@ namespace EXIFcoordinator
         {
             var myGraphicsLayer = (Esri.ArcGISRuntime.Layers.GraphicsLayer)this.MyMapView.Map.Layers["MyGraphicsLayer"];
             Esri.ArcGISRuntime.Controls.Editor myEditor = MyMapView.Editor;
-            Esri.ArcGISRuntime.Geometry.MapPoint myPoint = await myEditor.RequestPointAsync();
-            System.Windows.Point myWindowsPoint = MyMapView.LocationToScreen(myPoint);
 
+            var wgs84 = new Esri.ArcGISRuntime.Geometry.SpatialReference(4326);
+            var newPoint_webMercator = await myEditor.RequestPointAsync();
+            // 座標系変換 WebMercator to WGS84
+            var newPoint_wgs84 = Esri.ArcGISRuntime.Geometry.GeometryEngine.Project(newPoint_webMercator, wgs84);
 
-            Graphic newPoint = await myGraphicsLayer.HitTestAsync(MyMapView, myWindowsPoint);
+            var latlon_new = newPoint_wgs84 as MapPoint;
+            var latlon = exifPoints.Geometry as MapPoint;
+            latlon.X = latlon_new.X;
+            latlon.Y = latlon_new.Y;
+            var lon = latlon.X;
+            var lat = latlon.Y;
 
-            var latlon = newPoint.Geometry as MapPoint;
-            var lat = latlon.X;
-            var lon = latlon.Y;
             var filename = exifPoints.Attributes["Path"].ToString();
             int dir = int.Parse(exifPoints.Attributes["Direction"].ToString());
             var myPictureMarkerSymbol = ArrowSymbol(dir);
             var myGraphic = MainWindow.MappingPoints(lat, lon, dir, filename, myPictureMarkerSymbol);
-            myGraphicsLayer.Graphics.Add(myGraphic);
         }
 
 
-
-
-
-
-
-
-
-
-
-
-        // Add atributes
-        private void ButtonClicked_4(object sender, RoutedEventArgs e)
+        // Add a property
+        private async void AddProperty_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Add atributes");
+            try
+            {
+                var myGraphicsLayer = (Esri.ArcGISRuntime.Layers.GraphicsLayer)this.MyMapView.Map.Layers["MyGraphicsLayer"];
+                // Get the Editor associated with the MapView. The Editor enables drawing and editing graphic objects.
+                Esri.ArcGISRuntime.Controls.Editor myEditor = MyMapView.Editor;
+                Esri.ArcGISRuntime.Geometry.MapPoint myPoint = await myEditor.RequestPointAsync();
+                // Translate the MapPoint into Microsoft Point object.
+                System.Windows.Point myWindowsPoint = MyMapView.LocationToScreen(myPoint);
+                //Esri.ArcGISRuntime.Data.FeatureTable myFeatureTable = myGraphicLayer.FeatureTable;
+                Graphic exifPoints = await myGraphicsLayer.HitTestAsync(MyMapView, myWindowsPoint);
+
+                if (myPoint != null && exifPoints != null)
+                {
+                   
+
+                    string atr = "test";
+
+                    var latlon = exifPoints.Geometry as MapPoint;
+                    var lon = latlon.X;
+                    var lat = latlon.Y;
+
+                    var filename = exifPoints.Attributes["Path"].ToString();
+                    int dir = int.Parse(exifPoints.Attributes["Direction"].ToString());
+                    var myPictureMarkerSymbol = ArrowSymbol(dir);
+                    var myGraphic = MainWindow.MappingPoints(lat, lon, dir, filename, myPictureMarkerSymbol);
+                    myGraphic.Attributes["Attribute"] = atr; 
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Try again.");
+            }
         }
+
+
+
+
+
+
+
+
+
+
+
 
         // Clear
-        private void ButtonClicked_5(object sender, RoutedEventArgs e)
+        private void Clear_Click(object sender, RoutedEventArgs e)
         {
             var myGraphicsLayer = (Esri.ArcGISRuntime.Layers.GraphicsLayer)this.MyMapView.Map.Layers["MyGraphicsLayer"];
             myGraphicsLayer.Graphics.Clear();
@@ -207,10 +230,17 @@ namespace EXIFcoordinator
         // Zoom Buton 
         private async void ZoomToEnvelopeButton_Click(object sender, RoutedEventArgs e)
         {
-            // use the MapView's Editor to request geometry (Envelope) from the user and await the result
-            var newExtent = await MyMapView.Editor.RequestShapeAsync(Esri.ArcGISRuntime.Controls.DrawShape.Rectangle);
-            // set the map view extent with the Envelope
-            await MyMapView.SetViewAsync(newExtent);
+            try
+            {
+                // use the MapView's Editor to request geometry (Envelope) from the user and await the result
+                var newExtent = await MyMapView.Editor.RequestShapeAsync(Esri.ArcGISRuntime.Controls.DrawShape.Rectangle);
+                // set the map view extent with the Envelope
+                await MyMapView.SetViewAsync(newExtent);
+            }
+            catch
+            {
+                MessageBox.Show("Try again!");
+            }
         }
 
         public async void AddShapefileButton_Click(object sender, RoutedEventArgs e)
@@ -358,6 +388,11 @@ namespace EXIFcoordinator
             myGraphic.Attributes["Path"] = filename;
             myGraphic.Attributes["Direction"] = direction;
             return myGraphic;
+        }
+
+        private void dummy_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
         }
 
     }

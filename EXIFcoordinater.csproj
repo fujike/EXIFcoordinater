@@ -34,7 +34,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ESRI.ArcGIS.Client, Version=2.4.0.851, Culture=neutral, PublicKeyToken=29c6dd6e8553d944, processorArchitecture=MSIL" />
     <Reference Include="Esri.ArcGISRuntime, Version=10.2.3.0, Culture=neutral, PublicKeyToken=29c6dd6e8553d944, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -128,9 +127,6 @@
     <Resource Include="Resources\07_shapefile.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\01_save.jpg" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\05_attribute.jpg" />
   </ItemGroup>
   <ItemGroup>
@@ -141,6 +137,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\10_arrow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\11_CSV_Import.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\12_CSV_Export.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
