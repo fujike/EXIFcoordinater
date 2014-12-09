@@ -37,7 +37,6 @@ namespace EXIFcoordinator
             InitializeComponent();
         }
 
-
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var combo = sender as ComboBox;
@@ -70,13 +69,6 @@ namespace EXIFcoordinator
             var window = new ImportEXIFWindow(MyMapView);
             var result = window.ShowDialog();
         }
-
-
-
-
-
-
-
 
         // Move points
         private async void MovePoint_Click(object sender, RoutedEventArgs e)
@@ -128,42 +120,43 @@ namespace EXIFcoordinator
         }
 
 
-        // Add a property
-        private async void AddProperty_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var myGraphicsLayer = (Esri.ArcGISRuntime.Layers.GraphicsLayer)this.MyMapView.Map.Layers["MyGraphicsLayer"];
-                // Get the Editor associated with the MapView. The Editor enables drawing and editing graphic objects.
-                Esri.ArcGISRuntime.Controls.Editor myEditor = MyMapView.Editor;
-                Esri.ArcGISRuntime.Geometry.MapPoint myPoint = await myEditor.RequestPointAsync();
-                // Translate the MapPoint into Microsoft Point object.
-                System.Windows.Point myWindowsPoint = MyMapView.LocationToScreen(myPoint);
-                //Esri.ArcGISRuntime.Data.FeatureTable myFeatureTable = myGraphicLayer.FeatureTable;
-                Graphic exifPoints = await myGraphicsLayer.HitTestAsync(MyMapView, myWindowsPoint);
+        // Add a category
+        //private async void AddCategory_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var window = new AddCategoryWindow(MyMapView);
+        //    var result = window.ShowDialog();
 
-                if (myPoint != null && exifPoints != null)
-                {
-                   
+        //    try
+        //    {
+        //        var myGraphicsLayer = (Esri.ArcGISRuntime.Layers.GraphicsLayer)this.MyMapView.Map.Layers["MyGraphicsLayer"];
+        //        // Get the Editor associated with the MapView. The Editor enables drawing and editing graphic objects.
+        //        Esri.ArcGISRuntime.Controls.Editor myEditor = MyMapView.Editor;
+        //        Esri.ArcGISRuntime.Geometry.MapPoint myPoint = await myEditor.RequestPointAsync();
+        //        // Translate the MapPoint into Microsoft Point object.
+        //        System.Windows.Point myWindowsPoint = MyMapView.LocationToScreen(myPoint);
+        //        //Esri.ArcGISRuntime.Data.FeatureTable myFeatureTable = myGraphicLayer.FeatureTable;
+        //        Graphic exifPoints = await myGraphicsLayer.HitTestAsync(MyMapView, myWindowsPoint);
 
-                    string atr = "test";
+        //        if (myPoint != null && exifPoints != null)
+        //        {
+        //            string atr = "test";
 
-                    var latlon = exifPoints.Geometry as MapPoint;
-                    var lon = latlon.X;
-                    var lat = latlon.Y;
+        //            var latlon = exifPoints.Geometry as MapPoint;
+        //            var lon = latlon.X;
+        //            var lat = latlon.Y;
 
-                    var filename = exifPoints.Attributes["Path"].ToString();
-                    int dir = int.Parse(exifPoints.Attributes["Direction"].ToString());
-                    var myPictureMarkerSymbol = ArrowSymbol(dir);
-                    var myGraphic = MainWindow.MappingPoints(lat, lon, dir, filename, myPictureMarkerSymbol);
-                    myGraphic.Attributes["Attribute"] = atr; 
-                }
-            }
-            catch
-            {
-                MessageBox.Show("Try again.");
-            }
-        }
+        //            var filename = exifPoints.Attributes["Path"].ToString();
+        //            int dir = int.Parse(exifPoints.Attributes["Direction"].ToString());
+        //            var myPictureMarkerSymbol = ArrowSymbol(dir);
+        //            var myGraphic = MainWindow.MappingPoints(lat, lon, dir, filename, myPictureMarkerSymbol);
+        //            myGraphic.Attributes["Attribute"] = atr; 
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        MessageBox.Show("Try again.");
+        //    }
+        //}
 
 
 
@@ -182,6 +175,8 @@ namespace EXIFcoordinator
             var myGraphicsLayer = (Esri.ArcGISRuntime.Layers.GraphicsLayer)this.MyMapView.Map.Layers["MyGraphicsLayer"];
             myGraphicsLayer.Graphics.Clear();
         }
+
+
 
         // Show Photo
         private async void ShowPhoto_Click(object sender, RoutedEventArgs e)
@@ -205,8 +200,8 @@ namespace EXIFcoordinator
                     // Translate the MapPoint into Microsoft Point object.
                     System.Windows.Point myWindowsPoint = MyMapView.LocationToScreen(myPoint);
                     //Esri.ArcGISRuntime.Data.FeatureTable myFeatureTable = myGraphicLayer.FeatureTable;
-                    Graphic exifPoints = 
-                        await myGraphicLayer.HitTestAsync(MyMapView, myWindowsPoint);
+                    Graphic exifPoints = await myGraphicLayer.HitTestAsync(MyMapView, myWindowsPoint);
+
                     if (exifPoints != null)
                     {
                         var window = new ShowPhotoWindow(exifPoints);
@@ -274,7 +269,7 @@ namespace EXIFcoordinator
         }
 
 
-        // CSV Export
+        // Export CSV
         private void Click_ExportCSV(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.SaveFileDialog saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
@@ -305,7 +300,15 @@ namespace EXIFcoordinator
                     var latlon = point.Geometry as MapPoint;
                     var longitude = latlon.X;
                     var latitude = latlon.Y;
-                    writer.WriteLine("{0}, {1}, {2}, {3}", name, latitude, longitude, direction);
+                    if (point.Attributes["Category"] == null)
+                    {
+                        writer.WriteLine("{0}, {1}, {2}, {3}, ", name, latitude, longitude, direction);
+                    }
+                    else
+                    {
+                        string category = point.Attributes["Category"].ToString();
+                        writer.WriteLine("{0}, {1}, {2}, {3}, {4}", name, latitude, longitude, direction, category);
+                    }
                 }
                 writer.Close();
             }
@@ -387,12 +390,8 @@ namespace EXIFcoordinator
             var myGraphic = new Esri.ArcGISRuntime.Layers.Graphic(myGeometry, marker);
             myGraphic.Attributes["Path"] = filename;
             myGraphic.Attributes["Direction"] = direction;
+            myGraphic.Attributes["Category"] = null;
             return myGraphic;
-        }
-
-        private void dummy_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
         }
 
     }

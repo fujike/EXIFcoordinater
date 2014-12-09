@@ -33,25 +33,9 @@ namespace EXIFcoordinator
             InitializeComponent();
         }
 
-        private void Click_OK(object sender, RoutedEventArgs e)
-        {
-            this.DialogResult = true;
-        }
-
         // Browser1起動、テキストボックス1にパスを入力。
         private void Click_Browse(object sender, RoutedEventArgs e)
         {
-            // ファイル選択
-            //System.Windows.Forms.OpenFileDialog openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            //openFileDialog1.Filter = "JPEG files (*.jpg)|*.jpg";
-            //openFileDialog1.RestoreDirectory = true;
-            //openFileDialog1.Multiselect = true;
-
-            //if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            //{
-            //    path1.Text = openFileDialog1.FileName;
-            //}
-
             // ディレクトリ選択
             FolderBrowserDialog fbd = new FolderBrowserDialog();
             DialogResult dr = fbd.ShowDialog();
@@ -105,11 +89,6 @@ namespace EXIFcoordinator
             // GPS Tags(ID) Reference 
             // http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/GPS.html
 
-
-            GPSInfo_lat.Clear();
-            GPSInfo_lon.Clear();
-            GPSInfo_dir.Clear();
-
             try
             {
                 System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(filename);
@@ -120,24 +99,19 @@ namespace EXIFcoordinator
                 System.Drawing.Imaging.PropertyItem gpsLongitude = bmp.GetPropertyItem(4);
                 System.Drawing.Imaging.PropertyItem gpsImgDirectionRef = bmp.GetPropertyItem(16);
                 System.Drawing.Imaging.PropertyItem gpsImgDirection = bmp.GetPropertyItem(17);
-                //Display Latitude
-                var lat_deg10 = ByteToDegree(gpsLatitudeRef.Value, gpsLatitude.Value);
-                GPSInfo_lat.Text += string.Format("{0}", lat_deg10);
-                //Display Longitude
-                var lon_deg10 = ByteToDegree(gpsLongitudeRef.Value, gpsLongitude.Value);
-                GPSInfo_lon.Text += string.Format("{0}", lon_deg10);
-                //Display Direction
-                var direction = ByteToDirection(gpsImgDirectionRef.Value, gpsImgDirection.Value);
-                GPSInfo_dir.Text += string.Format("{0}", direction);
 
-                // EXIFの緯度経度をポイントで表示
-                double lat = double.Parse(GPSInfo_lat.Text);
-                double lon = double.Parse(GPSInfo_lon.Text);
+                // バイナリーデータを数値へ変換
+                var lat_deg10 = ByteToDegree(gpsLatitudeRef.Value, gpsLatitude.Value);
+                var lon_deg10 = ByteToDegree(gpsLongitudeRef.Value, gpsLongitude.Value);
+                var direction = ByteToDirection(gpsImgDirectionRef.Value, gpsImgDirection.Value);
+
+                //// EXIFの緯度経度をポイントで表示
+                double lat = lat_deg10;
+                double lon = lon_deg10;
                 var myGraphicsLayer = (Esri.ArcGISRuntime.Layers.GraphicsLayer)myMapView.Map.Layers["MyGraphicsLayer"];
                 var myPictureMarkerSymbol = MainWindow.ArrowSymbol(direction);
                 var myGraphic = MainWindow.MappingPoints(lat, lon, direction, filename, myPictureMarkerSymbol);
                 myGraphicsLayer.Graphics.Add(myGraphic);
-
             }
             catch (Exception)
             {
@@ -150,30 +124,20 @@ namespace EXIFcoordinator
         // Browser2起動、テキストボックス2にパスを入力。
         public void Click_GetGPSInfo(object sender, RoutedEventArgs e)
         {
-            string pathname = path1.Text;
-            string[] files = System.IO.Directory.GetFiles(pathname, "*.jpg");
-            foreach (var filename in files)
+            try
             {
-                GetGPSLocation(filename);
+                string pathname = path1.Text;
+                string[] files = System.IO.Directory.GetFiles(pathname, "*.jpg");
+                foreach (var filename in files)
+                {
+                    GetGPSLocation(filename);
+                }
+                this.DialogResult = true;
             }
-        }
-
-
-        // ステータスバー
-        private void MakeProgressBar(object sender, RoutedEventArgs e)
-        {
-            sbar.Items.Clear();
-            swc.TextBlock txtb = new swc.TextBlock();
-            txtb.Text = "Progress of download.";
-            sbar.Items.Add(txtb);
-            swc.ProgressBar progressbar = new swc.ProgressBar();
-            Duration duration = new Duration(TimeSpan.FromSeconds(10));
-            DoubleAnimation doubleanimation = new DoubleAnimation(100.0, duration);
-            progressbar.BeginAnimation(swc.ProgressBar.ValueProperty, doubleanimation);
-            swc.ToolTip ttprogbar = new swc.ToolTip();
-            ttprogbar.Content = "Shows the progress of a download.";
-            progressbar.ToolTip = (ttprogbar);
-            sbar.Items.Add(progressbar);
+            catch
+            {
+                System.Windows.MessageBox.Show("Please select a directory for import.");
+            }
         }
 
     }

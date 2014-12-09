@@ -20,12 +20,32 @@ namespace EXIFcoordinator
     /// <summary>
     /// Interaction logic for ShowPhotoWindow.xaml
     /// </summary>
+
     public partial class ShowPhotoWindow : Window
     {
-        public ShowPhotoWindow(Esri.ArcGISRuntime.Layers.Graphic exifPoints)
+        Graphic exifP;
+
+        public Graphic PointProperty
         {
-            Graphic point = exifPoints; 
+            get 
+            { 
+                return exifP;
+            }
+            set 
+            { 
+                if (exifP == null) exifP = value;
+            }
+        }
+
+        public ShowPhotoWindow(Graphic exifPoints)
+        {
             InitializeComponent();
+
+            Graphic point = exifPoints;
+
+            // set起動（代入）
+            this.PointProperty = point;
+
             // タイトルにファイル名を表示
             filename.Text = System.IO.Path.GetFileName(point.Attributes["Path"].ToString());
             // jpgを表示
@@ -36,13 +56,17 @@ namespace EXIFcoordinator
             pointimage.Source = bitmap;
             // 緯度・経度・方角を表示
             var latlon = point.Geometry as MapPoint;
-            if(latlon != null)
+            if (latlon != null)
             {
                 var longitude = latlon.X;
                 var latitude = latlon.Y;
                 lat.Text = latitude.ToString();
                 lon.Text = longitude.ToString();
                 dir.Text = point.Attributes["Direction"].ToString();
+                if (point.Attributes["Category"] != null)
+                {
+                    cat.Text = point.Attributes["Category"].ToString();
+                }
             }
             else
             {
@@ -50,10 +74,12 @@ namespace EXIFcoordinator
             }
         }
 
-        private void Click_Next(object sender, RoutedEventArgs e)
+        public void Click_AddCategory(object sender, RoutedEventArgs e)
         {
-            //GraphicsLayer graphicslayer = new GraphicsLayer();
-            //var x = graphicslayer.ID; 
+            // get起動 (参照)
+            var point = this.PointProperty;
+            point.Attributes["Category"] = category.Text;
+            cat.Text = point.Attributes["Category"].ToString();
         }
     }
 }

@@ -29,6 +29,10 @@
                         <TextBlock Text="Direction:" Foreground="White" Width="65"/>
                         <TextBlock Name="dir" TextWrapping="Wrap" Foreground="White"/>
                     </DockPanel>
+                    <DockPanel>
+                        <TextBlock Text="Category:" Foreground="White" Width="65"/>
+                        <TextBlock Name="cat" TextWrapping="Wrap" Foreground="White"/>
+                    </DockPanel>
                 </StackPanel>
             </Border>
 
@@ -37,10 +41,12 @@
             <Path StrokeThickness="1" Fill="#CC000000" Stroke="White" Stretch="Fill" 
                           VerticalAlignment="Top" Data="M0,0 L1,0"/>
             
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Back"/>
-                <Button Content="Next" Click="Click_Next"/> 
-                <Button Content="Move"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <TextBlock Text="Input category:" Margin="10,0"/>
+                <TextBox Name="category" Text="" Width="100"/>
+                <Button Name="add"  Content="Add" Click="Click_AddCategory" IsDefault="True"/>
+                <Button Content="Close" Margin="10, 0, 0, 0" IsCancel="True"/>
+
             </StackPanel>
         </StackPanel>
     </Grid>
