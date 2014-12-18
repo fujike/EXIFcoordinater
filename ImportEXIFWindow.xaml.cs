@@ -73,11 +73,8 @@ namespace EXIFcoordinator
 
         public int ByteToDirection(byte[] GPSImgDirectionRef, byte[] GPSImgDirection)
         {
-            //string sign = null;
             string value_dir = System.Text.Encoding.ASCII.GetString(GPSImgDirectionRef);
             value_dir = value_dir.Trim(new char[] { '\0' });
-            //if (value_dir == "T") { sign = "T"; }
-            //else if (value_dir == "M") { sign = "M"; }
             UInt16 dir_numerator = BitConverter.ToUInt16(GPSImgDirection, 0);
             UInt16 dir_denominator = BitConverter.ToUInt16(GPSImgDirection, 4);
             int direction = (int)dir_numerator / (int)dir_denominator;
@@ -116,23 +113,31 @@ namespace EXIFcoordinator
             catch (Exception)
             {
                 System.Windows.MessageBox.Show(
-                    System.IO.Path.GetFileName(filename) + "\n does not have GPS information.");
+                    System.IO.Path.GetFileName(filename) + ":\n It does not have GPS information.");
             }
 
         }
 
-        // Browser2起動、テキストボックス2にパスを入力。
+        // Browser起動、テキストボックスにパスを入力。
         public void Click_GetGPSInfo(object sender, RoutedEventArgs e)
         {
             try
             {
                 string pathname = path1.Text;
                 string[] files = System.IO.Directory.GetFiles(pathname, "*.jpg");
-                foreach (var filename in files)
+                // jpgが含まれないフォルダだった場合、警告を表示。
+                if (files.Length != 0)
                 {
-                    GetGPSLocation(filename);
+                    foreach (var filename in files)
+                    {
+                        GetGPSLocation(filename);
+                    }
+                    this.DialogResult = true;
                 }
-                this.DialogResult = true;
+                else
+                {
+                    System.Windows.MessageBox.Show("Cannot find any JPEG file in the directory.");
+                }
             }
             catch
             {

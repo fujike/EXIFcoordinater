@@ -5,47 +5,44 @@
         Title="ShowPhotoWindow" SizeToContent="WidthAndHeight"
         WindowStartupLocation="Manual" Top="100" Left="0">
     
-    <Grid Name="photodisplay" HorizontalAlignment="Right" VerticalAlignment="Top" MaxWidth="300">
+    <Grid Name="photodisplay" HorizontalAlignment="Right" VerticalAlignment="Top" Width="500">
         <StackPanel HorizontalAlignment="Left" Orientation="Vertical">
-            <TextBlock Name="filename" Text="" FontWeight="Bold" Background="#CC000000" Foreground="White" />
-            <Image Name="pointimage" Width="300">
+            <TextBlock Name="filename" Text="" FontWeight="Bold" Background="#CC000000" Foreground="White"  FontSize="18"/>
+            <Image Name="pointimage" Width="Auto">
                 <Image.Source>
-                    <BitmapImage DecodePixelWidth="300" UriSource=""/>
+                    <BitmapImage UriSource=""/>
                 </Image.Source>
             </Image>
             
-            <Border Background="#CC000000" BorderThickness="1,1,1,0" 
-                            Margin="0,0,0,-1" BorderBrush="White">
+            <Border Background="#CC000000" BorderThickness="1,1,1,0" Margin="0,0,0,-1" BorderBrush="White">
                 <StackPanel Margin="10">
                     <DockPanel>
-                        <TextBlock Text="Latitude:" Foreground="White" Width="65"/>
-                        <TextBlock Name="lat" Text="" TextWrapping="Wrap" Foreground="White"/>
+                        <TextBlock Text="Latitude (deg.):" Foreground="White" Width="150" FontSize="16"/>
+                        <TextBlock Name="lat" Text="" TextWrapping="Wrap" Foreground="White" FontSize="16"/>
                     </DockPanel>
                     <DockPanel>
-                        <TextBlock Text="Longitude:" Foreground="White" Width="65"/>
-                        <TextBlock Name="lon" TextWrapping="Wrap" Foreground="White"/>
+                        <TextBlock Text="Longitude (deg.):" Foreground="White" Width="150" FontSize="16"/>
+                        <TextBlock Name="lon" TextWrapping="Wrap" Foreground="White" FontSize="16"/>
                     </DockPanel>
                     <DockPanel>
-                        <TextBlock Text="Direction:" Foreground="White" Width="65"/>
-                        <TextBlock Name="dir" TextWrapping="Wrap" Foreground="White"/>
+                        <TextBlock Text="Direction (deg.):" Foreground="White" Width="150" FontSize="16"/>
+                        <TextBlock Name="dir" TextWrapping="Wrap" Foreground="White" FontSize="16"/>
                     </DockPanel>
                     <DockPanel>
-                        <TextBlock Text="Category:" Foreground="White" Width="65"/>
-                        <TextBlock Name="cat" TextWrapping="Wrap" Foreground="White"/>
+                        <TextBlock Text="Category:" Foreground="White" Width="150" FontSize="16"/>
+                        <TextBlock Name="cat" TextWrapping="Wrap" Foreground="White" FontSize="16"/>
                     </DockPanel>
                 </StackPanel>
             </Border>
 
-            <Path StrokeThickness="1" Fill="#CC000000" Stroke="White" Stretch="Fill" 
-                          HorizontalAlignment="Left" Data="M0,0 L0,1 1,0"/>
-            <Path StrokeThickness="1" Fill="#CC000000" Stroke="White" Stretch="Fill" 
-                          VerticalAlignment="Top" Data="M0,0 L1,0"/>
+            <Path StrokeThickness="1" Fill="#CC000000" Stroke="White" Stretch="Fill" HorizontalAlignment="Left" Data="M0,0 L0,1 1,0"/>
+            <Path StrokeThickness="1" Fill="#CC000000" Stroke="White" Stretch="Fill" VerticalAlignment="Top" Data="M0,0 L1,0"/>
             
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                <TextBlock Text="Input category:" Margin="10,0"/>
-                <TextBox Name="category" Text="" Width="100"/>
-                <Button Name="add"  Content="Add" Click="Click_AddCategory" IsDefault="True"/>
-                <Button Content="Close" Margin="10, 0, 0, 0" IsCancel="True"/>
+                <TextBlock Text="Input category:" Margin="10,0" FontSize="16"/>
+                <TextBox Name="category" Text="" Width="150" FontSize="16"/>
+                <Button Name="add"  Content="Add" Click="Click_AddCategory" IsDefault="True" Width="60" FontSize="16"/>
+                <Button Content="Close" Margin="10, 0, 0, 0" IsCancel="True" Width="60" FontSize="16"/>
 
             </StackPanel>
         </StackPanel>

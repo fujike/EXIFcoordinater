@@ -27,6 +27,8 @@
                 <esri:ArcGISTiledMapServiceLayer ID="BaseMap"  
                     ServiceUri="http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"/>
                 <esri:GraphicsLayer ID="MyGraphicsLayer"/>
+                <esri:ArcGISDynamicMapServiceLayer ID="MyShapefileLayer"/>
+                
             </esri:Map>
         </esri:MapView>
         <!--地図表示 END-->
@@ -39,7 +41,7 @@
         			Tag="http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"/>
             <ComboBoxItem FontSize="18"  Content="Streets"
         			Tag="http://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer"/>
-            <ComboBoxItem FontSize="18" Content="Topo"
+            <ComboBoxItem FontSize="18" Content="Topography"
         			Tag="http://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer"/>
         </ComboBox>
         <!--Add a basemap selection control. END-->
@@ -52,31 +54,26 @@
                 <Button Click="Import_Photos" ToolTip="Import photos with GPS information">
                     <Image Source="Resources/02_camera.jpg" Width="50" Height="50"/>
                 </Button>
-                <Button Click="ShowPhoto_Click" ToolTip="Display a photo with GPS information">
-                    <Image Source="Resources/08_landscape.jpg" Width="50" Height="50"/>
-                </Button>
-                <Button Click="MovePoint_Click" ToolTip="Replace a graphic">
-                    <Image Source="Resources/03_move.png" Width="50" Height="50"/>
-                </Button>
-                <!--<Button Click="AddCategory_Click" ToolTip="Add a property of the graphic">
-                    <Image Source="Resources/05_attribute.jpg" Width="50" Height="50"/>
-                </Button>-->
-                <Button Click="Click_ExportCSV" ToolTip="Export a csv/txt file">
-                    <Image Source="Resources/12_CSV_Export.jpg" Width="50" Height="50"/>
-                </Button>
-
                 <Button Click="Click_InportCSV" ToolTip="Import a csv file">
                     <Image Source="Resources/11_CSV_Import.png" Width="50" Height="50"/>
                 </Button>
                 <Button Click="AddShapefileButton_Click" ToolTip="Import a Shapefile file">
                     <Image Source="Resources/07_shapefile.png" Width="50" Height="50"/>
                 </Button>
-
-                <Button Click="Clear_Click" ToolTip="Erace graphics">
-                    <Image Source="Resources/04_clear.jpg" Width="50" Height="50"/>
+                <Button Click="ShowPhoto_Click" ToolTip="Display a photo with GPS information">
+                    <Image Source="Resources/08_landscape.jpg" Width="50" Height="50"/>
+                </Button>
+                <Button Click="MovePoint_Click" ToolTip="Replace a graphic">
+                    <Image Source="Resources/03_move.png" Width="50" Height="50"/>
+                </Button>
+                <Button Click="Click_ExportCSV" ToolTip="Export a csv/txt file">
+                    <Image Source="Resources/12_CSV_Export.jpg" Width="50" Height="50"/>
                 </Button>
                 <Button Click="ZoomToEnvelopeButton_Click" ToolTip="Zoom in">
                     <Image Source="Resources/06_zoom.png" Width="50" Height="50"/>
+                </Button>
+                <Button Click="Clear_Click" ToolTip="Erace graphics">
+                    <Image Source="Resources/04_clear.jpg" Width="50" Height="50"/>
                 </Button>
             </ToolBar>
         </ToolBarTray>

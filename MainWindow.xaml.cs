@@ -120,62 +120,19 @@ namespace EXIFcoordinator
         }
 
 
-        // Add a category
-        //private async void AddCategory_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var window = new AddCategoryWindow(MyMapView);
-        //    var result = window.ShowDialog();
-
-        //    try
-        //    {
-        //        var myGraphicsLayer = (Esri.ArcGISRuntime.Layers.GraphicsLayer)this.MyMapView.Map.Layers["MyGraphicsLayer"];
-        //        // Get the Editor associated with the MapView. The Editor enables drawing and editing graphic objects.
-        //        Esri.ArcGISRuntime.Controls.Editor myEditor = MyMapView.Editor;
-        //        Esri.ArcGISRuntime.Geometry.MapPoint myPoint = await myEditor.RequestPointAsync();
-        //        // Translate the MapPoint into Microsoft Point object.
-        //        System.Windows.Point myWindowsPoint = MyMapView.LocationToScreen(myPoint);
-        //        //Esri.ArcGISRuntime.Data.FeatureTable myFeatureTable = myGraphicLayer.FeatureTable;
-        //        Graphic exifPoints = await myGraphicsLayer.HitTestAsync(MyMapView, myWindowsPoint);
-
-        //        if (myPoint != null && exifPoints != null)
-        //        {
-        //            string atr = "test";
-
-        //            var latlon = exifPoints.Geometry as MapPoint;
-        //            var lon = latlon.X;
-        //            var lat = latlon.Y;
-
-        //            var filename = exifPoints.Attributes["Path"].ToString();
-        //            int dir = int.Parse(exifPoints.Attributes["Direction"].ToString());
-        //            var myPictureMarkerSymbol = ArrowSymbol(dir);
-        //            var myGraphic = MainWindow.MappingPoints(lat, lon, dir, filename, myPictureMarkerSymbol);
-        //            myGraphic.Attributes["Attribute"] = atr; 
-        //        }
-        //    }
-        //    catch
-        //    {
-        //        MessageBox.Show("Try again.");
-        //    }
-        //}
-
-
-
-
-
-
-
-
-
 
 
 
         // Clear
-        private void Clear_Click(object sender, RoutedEventArgs e)
+        public void Clear_Click(object sender, RoutedEventArgs e)
         {
             var myGraphicsLayer = (Esri.ArcGISRuntime.Layers.GraphicsLayer)this.MyMapView.Map.Layers["MyGraphicsLayer"];
             myGraphicsLayer.Graphics.Clear();
-        }
 
+            // 2回目入力のShapefileを消すことができない。要検討。
+            //var dynlayer = (Esri.ArcGISRuntime.Layers.ArcGISDynamicMapServiceLayer)this.MyMapView.Map.Layers["MyShapefileLayer"];
+            //dynlayer.LayerDrawingOptions.Clear();
+        }
 
 
         // Show Photo
@@ -246,25 +203,34 @@ namespace EXIFcoordinator
             openFileDialog.RestoreDirectory = true;
             openFileDialog.Multiselect = true;
 
-            if (openFileDialog.ShowDialog() == true)
+            try
             {
-                var fileNames = new List<string>();
-                foreach (var item in openFileDialog.SafeFileNames)
+                if (openFileDialog.ShowDialog() == true)
                 {
-                    fileNames.Add(System.IO.Path.GetFileNameWithoutExtension(item));
+                    var fileNames = new List<string>();
+                    foreach (var item in openFileDialog.SafeFileNames)
+                    {
+                        fileNames.Add(System.IO.Path.GetFileNameWithoutExtension(item));
+                    }
+
+                    // Call the add dataset method with workspace type, parent directory path and file names (without extensions)
+                    var myAddFileDatasetToDynamicMapServiceLayer = new ShapefileHandler();
+                    var dynLayer = await myAddFileDatasetToDynamicMapServiceLayer.AddFileDatasetToDynamicMapServiceLayer(WorkspaceFactoryType.Shapefile,
+                        System.IO.Path.GetDirectoryName(openFileDialog.FileName), fileNames);
+
+                    // Add the dynamic map service layer to the map
+                    if (dynLayer != null)
+                    {
+                        MyMapView.Map.Layers.Add(dynLayer);
+
+                    }
+
                 }
 
-                // Call the add dataset method with workspace type, parent directory path and file names (without extensions)
-                var myAddFileDatasetToDynamicMapServiceLayer = new ShapefileHandler();
-                var dynLayer = await myAddFileDatasetToDynamicMapServiceLayer.AddFileDatasetToDynamicMapServiceLayer(WorkspaceFactoryType.Shapefile,
-                    System.IO.Path.GetDirectoryName(openFileDialog.FileName), fileNames);
-
-                // Add the dynamic map service layer to the map
-                if (dynLayer != null)
-                {
-                    MyMapView.Map.Layers.Add(dynLayer);
-                }
-                    
+            }
+            catch
+            {
+                MessageBox.Show("This Shapefile cannot be read.");
             }
         }
 
@@ -323,12 +289,12 @@ namespace EXIFcoordinator
             Encoding shiftjis = Encoding.GetEncoding("Shift_JIS");
             if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                string text = System.IO.File.ReadAllText(openFileDialog1.FileName, shiftjis);
-                string[] rows = text.Trim().Replace("\r", "").Split('\n');
-                string directorypath = System.IO.Path.GetDirectoryName(openFileDialog1.FileName);
-
                 try
                 {
+                    string text = System.IO.File.ReadAllText(openFileDialog1.FileName, shiftjis);
+                    string[] rows = text.Trim().Replace("\r", "").Split('\n');
+                    string directorypath = System.IO.Path.GetDirectoryName(openFileDialog1.FileName);
+
                     for (int i = 0; i < rows.Length; i++)
                     {
                         string[] columns = rows[i].Split(',');
@@ -342,28 +308,30 @@ namespace EXIFcoordinator
                         double lon = double.Parse(columns[2]);
                         int dir = int.Parse(columns[3]);
                         var myGraphicsLayer = (Esri.ArcGISRuntime.Layers.GraphicsLayer)this.MyMapView.Map.Layers["MyGraphicsLayer"];
-                        //var myPointSymbol = (Esri.ArcGISRuntime.Symbology.SimpleMarkerSymbol)this.LayoutRoot2.Resources["MyPointSymbol"];
-                        
-                        //var myGraphic = MainWindow.MappingPoints(lat, lon, dir, filename, myPointSymbol);
-
-                        //System.Uri myPictureUri = new System.Uri("Resources/10_arrow.png", UriKind.Relative);
-                        ////var myPictureMarkerSymbol = (Esri.ArcGISRuntime.Symbology.PictureMarkerSymbol)this.LayoutRoot2.Resources["MyPointSymbol_arrow"];
-                        //var myPictureMarkerSymbol = new Esri.ArcGISRuntime.Symbology.PictureMarkerSymbol();
-                        //myPictureMarkerSymbol.SetSourceAsync(myPictureUri);
-                        //myPictureMarkerSymbol.Height = 20;
-                        //myPictureMarkerSymbol.Width = 10;
-                        //myPictureMarkerSymbol.Angle = dir;
                         var myPictureMarkerSymbol = ArrowSymbol(dir);
-                        //var mySimpleRenderer = new Esri.ArcGISRuntime.Symbology.SimpleRenderer();
-                        //mySimpleRenderer.Symbol = myPictureMarkerSymbol;
-                        var myGraphic = MainWindow.MappingPoints(lat, lon, dir, filename, myPictureMarkerSymbol);
-                        
-                        myGraphicsLayer.Graphics.Add(myGraphic);
+                        if (columns.Length == 4)
+                        {
+                            var myGraphic = MainWindow.MappingPoints(lat, lon, dir, filename, myPictureMarkerSymbol);
+                            myGraphicsLayer.Graphics.Add(myGraphic);
+                        }
+                        else if(columns.Length == 5)
+                        {
+                            string category = columns[4];
+                            var myGraphic = MainWindow.MappingPoints(category, lat, lon, dir, filename, myPictureMarkerSymbol);
+                            myGraphicsLayer.Graphics.Add(myGraphic);
+                        }
+                        else
+                        {
+                            MessageBox.Show(System.IO.Path.GetFileName(filename) + ":\n Number of column is not correct.\n Styles ONLY composed of 4 or 5 columns are supported.");
+                            myGraphicsLayer.Graphics.Clear();
+                        }
                     }
                 }
                 catch
                 {
                     MessageBox.Show("Could not read file. It was written in the wrong form.", "Error");
+                    var myGraphicsLayer = (Esri.ArcGISRuntime.Layers.GraphicsLayer)this.MyMapView.Map.Layers["MyGraphicsLayer"];
+                    myGraphicsLayer.Graphics.Clear();
                 }
             }
         }
@@ -381,7 +349,6 @@ namespace EXIFcoordinator
         }
 
 
-        //public static Graphic MappingPoints(double lat, double lon, int direction, string filename, SimpleMarkerSymbol marker)
         public static Graphic MappingPoints(double lat, double lon, int direction, string filename, PictureMarkerSymbol marker)
         {
 
@@ -391,6 +358,18 @@ namespace EXIFcoordinator
             myGraphic.Attributes["Path"] = filename;
             myGraphic.Attributes["Direction"] = direction;
             myGraphic.Attributes["Category"] = null;
+            return myGraphic;
+        }
+
+        public static Graphic MappingPoints(string category, double lat, double lon, int direction, string filename, PictureMarkerSymbol marker)
+        {
+
+            var sref = Esri.ArcGISRuntime.Geometry.SpatialReferences.Wgs84;
+            var myGeometry = new Esri.ArcGISRuntime.Geometry.MapPoint(lon, lat, sref);
+            var myGraphic = new Esri.ArcGISRuntime.Layers.Graphic(myGeometry, marker);
+            myGraphic.Attributes["Path"] = filename;
+            myGraphic.Attributes["Direction"] = direction;
+            myGraphic.Attributes["Category"] = category;
             return myGraphic;
         }
 
